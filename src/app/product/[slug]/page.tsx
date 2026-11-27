@@ -1,0 +1,5 @@
+import Link from "next/link";
+import {notFound} from "next/navigation";
+import {getProducts,euro} from "@/lib/catalog";
+import ProductAddButton from "@/components/product-add-button";
+export default async function ProductPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const products=await getProducts();const product=products.find(item=>item.slug===slug);if(!product)notFound();return <main className="product-detail"><Link className="back-link" href="/shop">← Terug naar de shop</Link><div className="product-detail-grid"><div className="detail-image"><img src={product.image_url} alt={product.name}/></div><div className="detail-copy"><span className="kicker">{product.category}</span><h1>{product.name}</h1><strong className="detail-price">{euro(product.price_cents)}</strong><p>{product.description}</p><p className="stock-note">{product.stock>0?"Op voorraad":"Momenteel uitverkocht"}</p><ProductAddButton product={product}/><p className="fine-print">Verzend- en retourinformatie wordt voor livegang aangevuld.</p></div></div></main>;}
