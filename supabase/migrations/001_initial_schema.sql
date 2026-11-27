@@ -39,7 +39,7 @@ drop policy if exists "Customers view own order items" on public.order_items;
 create policy "Customers view own order items" on public.order_items for select using(exists(select 1 from public.orders o where o.id=order_id and o.user_id=auth.uid()));
 
 drop function if exists public.create_safalina_order(uuid,jsonb,text,jsonb);
-create function public.create_safalina_order(p_user_id uuid,p_shipping jsonb,p_notes text,p_items jsonb,p_shipping_cents integer default 495)
+create or replace function public.create_safalina_order(p_user_id uuid,p_shipping jsonb,p_notes text,p_items jsonb,p_shipping_cents integer default 495)
 returns uuid language plpgsql security definer set search_path=public as $$
 declare v_order_id uuid:=gen_random_uuid(); v_item jsonb; v_product public.products%rowtype; v_subtotal integer:=0; v_qty integer; v_shipping integer:=p_shipping_cents;
 begin
