@@ -1,0 +1,6 @@
+"use client";
+import {FormEvent,useState} from "react";
+import {useRouter} from "next/navigation";
+import Link from "next/link";
+import {createClient} from "@/lib/supabase/browser";
+export default function AdminLoginPage(){const router=useRouter();const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false);async function submit(e:FormEvent){e.preventDefault();setBusy(true);setError("");try{const db=createClient();const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;router.push("/admin");router.refresh();}catch(err){setError(err instanceof Error?err.message:"Inloggen mislukt.");setBusy(false);}}return <main className="auth-page"><section className="auth-card"><Link className="auth-brand" href="/">safalina</Link><span className="kicker">Beveiligde omgeving</span><h1>Admin login</h1><p>Log in met het beheerdersaccount.</p><form onSubmit={submit}><label>E-mailadres<input type="email" required value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Wachtwoord<input type="password" required value={password} onChange={e=>setPassword(e.target.value)}/></label>{error&&<p className="form-error">{error}</p>}<button className="button auth-submit" disabled={busy}>{busy?"Inloggen…":"Inloggen"}</button></form></section></main>;}
