@@ -38,11 +38,13 @@ create policy "Customers view own orders" on public.orders for select using(auth
 drop policy if exists "Customers view own order items" on public.order_items;
 create policy "Customers view own order items" on public.order_items for select using(exists(select 1 from public.orders o where o.id=order_id and o.user_id=auth.uid()));
 
-create or replace function public.create_safalina_order(p_user_id uuid,p_shipping jsonb,p_notes text,p_items jsonb)
+drop function if exists public.create_safalina_order(uuid,jsonb,text,jsonb);
+create function public.create_safalina_order(p_user_id uuid,p_shipping jsonb,p_notes text,p_items jsonb,p_shipping_cents integer default 495)
 returns uuid language plpgsql security definer set search_path=public as $$
-declare v_order_id uuid:=gen_random_uuid(); v_item jsonb; v_product public.products%rowtype; v_subtotal integer:=0; v_qty integer;
+declare v_order_id uuid:=gen_random_uuid(); v_item jsonb; v_product public.products%rowtype; v_subtotal integer:=0; v_qty integer; v_shipping integer:=p_shipping_cents;
 begin
  if auth.uid() is null or auth.uid()<>p_user_id then raise exception 'not_authorized'; end if;
+ if v_shipping<0 or v_shipping>25000 then raise exception 'invalid_shipping'; end if;
  if jsonb_typeof(p_items)<>'array' or jsonb_array_length(p_items)<1 then raise exception 'empty_order'; end if;
  for v_item in select * from jsonb_array_elements(p_items) loop
   v_qty:=(v_item->>'quantity')::integer;
@@ -51,8 +53,8 @@ begin
   if not found or v_product.stock<v_qty then raise exception 'out_of_stock'; end if;
   v_subtotal:=v_subtotal+(v_product.price_cents*v_qty);
  end loop;
- insert into public.orders(id,user_id,email,shipping,notes,subtotal_cents,total_cents,status)
- values(v_order_id,p_user_id,p_shipping->>'email',p_shipping,p_notes,v_subtotal,v_subtotal,'created');
+ insert into public.orders(id,user_id,email,shipping,notes,subtotal_cents,shipping_cents,total_cents,status)
+ values(v_order_id,p_user_id,p_shipping->>'email',p_shipping,p_notes,v_subtotal,v_shipping,v_subtotal+v_shipping,'created');
  for v_item in select * from jsonb_array_elements(p_items) loop
   v_qty:=(v_item->>'quantity')::integer;
   select * into v_product from public.products where id=(v_item->>'productId')::uuid for update;
@@ -62,7 +64,14 @@ begin
  end loop;
  return v_order_id;
 end; $$;
-revoke all on function public.create_safalina_order(uuid,jsonb,text,jsonb) from public;
-grant execute on function public.create_safalina_order(uuid,jsonb,text,jsonb) to authenticated;
+revoke all on function public.create_safalina_order(uuid,jsonb,text,jsonb,integer) from public;
+grant execute on function public.create_safalina_order(uuid,jsonb,text,jsonb,integer) to authenticated;
+
+insert into public.products(id,slug,name,description,price_cents,image_url,category,stock,active) values
+('11111111-1111-4111-8111-111111111111','the-daily-glow','The Daily Glow','Een verfijnde essential voor jouw dagelijkse verzorgingsritueel.',2495,'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85','Beauty & care',20,true),
+('22222222-2222-4222-8222-222222222222','calm-ritual','Calm Ritual','Creëer thuis een rustig moment met deze zorgvuldig gekozen essential.',1995,'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=85','Wellness',20,true),
+('33333333-3333-4333-8333-333333333333','pure-balance','Pure Balance','Een eenvoudige toevoeging aan jouw dagelijkse routine.',2995,'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=85','Daily essentials',20,true),
+('44444444-4444-4444-8444-444444444444','soft-radiance','Soft Radiance','Een zachte everyday essential, geselecteerd met aandacht.',2250,'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=900&q=85','Beauty & care',20,true)
+on conflict(slug) do nothing;
 -- After creating your account, promote the store owner in the SQL editor:
 -- update public.profiles set role='admin' where email='YOUR_ADMIN_EMAIL';
