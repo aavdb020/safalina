@@ -3,7 +3,7 @@ import {FormEvent,useEffect,useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {createClient} from "@/lib/supabase/browser";
-import {euro} from "@/lib/catalog";
+import {euro} from "@/lib/format";
 type Item={id:string;name:string;price_cents:number;quantity:number};
 export default function CheckoutPage(){
  const router=useRouter();const [items,setItems]=useState<Item[]>([]),[loaded,setLoaded]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState("");
