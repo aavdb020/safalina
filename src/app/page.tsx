@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ArrowRight, Check, ChevronRight, Heart, Menu, Minus, Plus, Search, ShoppingBag, Sparkles, Truck, X } from "lucide-react";
 
 type Product = { id: number; name: string; subtitle: string; price: number; image: string; tag?: string };
@@ -37,7 +38,7 @@ export default function Home() {
   function change(id: number, delta: number) {
     setCart(current => current.map(item => item.product.id === id ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0));
   }
-  function subscribe(e: React.FormEvent<HTMLFormElement>) {
+  function subscribe(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email.includes("@")) return;
     setSubscribed(true);
