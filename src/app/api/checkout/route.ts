@@ -12,7 +12,7 @@ export async function POST(request:Request){
   const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Controleer je gegevens en winkelmandje."},{status:400});
   const auth=await createClient();const {data:{user}}=await auth.auth.getUser();if(!user)return NextResponse.json({error:"Log eerst in om af te rekenen."},{status:401});
   const key=process.env.MOLLIE_API_KEY;if(!key)return NextResponse.json({error:"Betalingen zijn nog niet geconfigureerd."},{status:503});
-  const admin=createAdminClient();const {data:orderId,error:orderError}=await auth.rpc("create_safalina_order",{p_user_id:user.id,p_shipping:parsed.data.shipping,p_notes:parsed.data.notes,p_items:parsed.data.items});
+  const admin=createAdminClient();const {data:orderId,error:orderError}=await auth.rpc("create_safalina_order",{p_user_id:user.id,p_shipping:parsed.data.shipping,p_notes:parsed.data.notes,p_items:parsed.data.items,p_shipping_cents:Number(process.env.SHIPPING_FEE_CENTS||"495")});
   if(orderError||!orderId){console.error("Order creation failed",orderError);return NextResponse.json({error:"Bestelling niet aangemaakt. Controleer voorraad en probeer opnieuw."},{status:409});}
   const {data:order,error:readError}=await admin.from("orders").select("id,total_cents").eq("id",orderId).single();
   if(readError||!order)return NextResponse.json({error:"Bestelling aangemaakt, ophalen mislukt."},{status:500});
