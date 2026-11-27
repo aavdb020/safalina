@@ -1,0 +1,17 @@
+"use client";
+import {FormEvent,useEffect,useState} from "react";
+import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {createClient} from "@/lib/supabase/browser";
+import {euro} from "@/lib/catalog";
+type Item={id:string;name:string;price_cents:number;quantity:number};
+export default function CheckoutPage(){
+ const router=useRouter();const [items,setItems]=useState<Item[]>([]),[loaded,setLoaded]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState("");
+ const [form,setForm]=useState({firstName:"",lastName:"",email:"",phone:"",street:"",houseNumber:"",postalCode:"",city:"",country:"NL"});
+ useEffect(()=>{try{setItems(JSON.parse(localStorage.getItem("safalina-cart-v1")||"[]"));}catch{setItems([]);}setLoaded(true);},[]);
+ const total=items.reduce((sum,item)=>sum+item.price_cents*item.quantity,0);
+ function update(key:keyof typeof form,value:string){setForm(current=>({...current,[key]:value}));}
+ async function submit(e:FormEvent){e.preventDefault();setBusy(true);setError("");try{const db=createClient();const {data:{user}}=await db.auth.getUser();if(!user){router.push("/login?next=/checkout");return;}const response=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items:items.map(item=>({productId:item.id,quantity:item.quantity})),shipping:form})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Afrekenen mislukt.");window.location.assign(data.checkoutUrl);}catch(err){setError(err instanceof Error?err.message:"Er ging iets mis.");setBusy(false);}}
+ if(!loaded)return <main className="checkout-page">Je winkelmandje laden…</main>;
+ return <main className="checkout-page"><div className="checkout-wrap"><Link className="back-link" href="/">← Verder winkelen</Link><span className="kicker">Bijna van jou</span><h1>Afrekenen</h1>{items.length===0?<section className="account-panel"><p>Je winkelmandje is leeg.</p><Link className="button" href="/shop">Bekijk de collectie</Link></section>:<div className="checkout-grid"><form className="checkout-form" onSubmit={submit}><h2>Bezorggegevens</h2><div className="field-grid">{([["firstName","Voornaam"],["lastName","Achternaam"],["email","E-mailadres"],["phone","Telefoonnummer"],["street","Straat"],["houseNumber","Huisnummer"],["postalCode","Postcode"],["city","Plaats"]] as const).map(([key,label])=><label key={key} className={["email","phone","street","city"].includes(key)?"field-wide":""}>{label}<input required={key!=="phone"} type={key==="email"?"email":"text"} value={form[key]} onChange={e=>update(key,e.target.value)}/></label>)}</div>{error&&<p className="form-error">{error}</p>}<button className="button auth-submit" disabled={busy}>{busy?"Bestelling voorbereiden…":"Veilig betalen"} →</button><p className="fine-print">Je wordt doorgestuurd naar de beveiligde betaalpagina van Mollie.</p></form><aside className="order-summary"><h2>Jouw bestelling</h2>{items.map(item=><div className="summary-row" key={item.id}><span>{item.name} × {item.quantity}</span><strong>{euro(item.price_cents*item.quantity)}</strong></div>)}<div className="summary-total"><span>Totaal</span><strong>{euro(total)}</strong></div><p>Verzendkosten worden later ingesteld.</p></aside></div>}</div></main>;
+}
