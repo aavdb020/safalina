@@ -3,7 +3,7 @@ import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {ArrowRight,Check,ChevronRight,Heart,Menu,Minus,Plus,Search,ShoppingBag,Sparkles,Truck,UserRound,X} from "lucide-react";
 import type {Product} from "@/lib/catalog";
-import {euro} from "@/lib/catalog";
+import {euro} from "@/lib/format";
 type CartLine={id:string;name:string;price_cents:number;quantity:number;image_url:string};
 export default function Storefront({products}:{products:Product[]}){
  const [cart,setCart]=useState<CartLine[]>([]),[loaded,setLoaded]=useState(false),[cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[searchOpen,setSearchOpen]=useState(false),[search,setSearch]=useState(""),[toast,setToast]=useState("");
