@@ -1,0 +1,4 @@
+"use client";
+import {useState} from "react";
+import type {Product} from "@/lib/catalog";
+export default function ProductAddButton({product}:{product:Product}){const [message,setMessage]=useState("");function add(){const key="safalina-cart-v1";const cart=JSON.parse(localStorage.getItem(key)||"[]") as {id:string;name:string;price_cents:number;quantity:number}[];const found=cart.find(item=>item.id===product.id);if(found)found.quantity+=1;else cart.push({id:product.id,name:product.name,price_cents:product.price_cents,quantity:1});localStorage.setItem(key,JSON.stringify(cart));setMessage("Toegevoegd aan je winkelmandje.");}return <div><button className="button" onClick={add} disabled={product.stock<1}>Voeg toe aan winkelmandje</button>{message&&<p className="form-success">{message} <a href="/checkout">Afrekenen</a></p>}</div>;}
