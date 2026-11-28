@@ -31,8 +31,13 @@ function category(tags:string[]){
 export async function POST(){
   if(!(await isAdmin()))return NextResponse.json({error:"Niet toegestaan"},{status:403});
   try{
-    const response=await fetch(SOURCE,{cache:"no-store"});
-    if(!response.ok)throw new Error("Safalina productfeed kon niet worden geladen.");
+    const response=await fetch(SOURCE,{cache:"no-store",headers:{"Accept":"application/json","User-Agent":"Mozilla/5.0 (compatible; SafalinaDemoImporter/1.0)"},signal:AbortSignal.timeout(20000)});
+    if(!response.ok){
+      const blocked=response.status===403||response.headers.has("cf-mitigated");
+      throw new Error(blocked?"Safalina.nl blokkeert de automatische catalogusimport met Cloudflare (HTTP 403). De productfeed is niet toegankelijk vanaf de server. Gebruik een Shopify-productexport (CSV) of laat de bronwebsite de feed vrijgeven.":"Safalina productfeed kon niet worden geladen (HTTP "+response.status+").");
+    }
+    const contentType=response.headers.get("content-type")||"";
+    if(!contentType.includes("json"))throw new Error("De productfeed gaf geen JSON terug. De bronwebsite blokkeert waarschijnlijk automatische toegang.");
     const payload=await response.json();
     const sourceProducts=Array.isArray(payload.products)?payload.products:[];
     if(!sourceProducts.length)throw new Error("Geen producten gevonden op de bronwebsite.");
