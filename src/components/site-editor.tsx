@@ -2,7 +2,7 @@
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {ArrowLeft,Eye,Monitor,Save,Smartphone,Store} from "lucide-react";
-import {defaultSiteSettings,type SiteSettings} from "@/lib/site-settings";
+import {defaultSiteSettings,type SiteSettings} from "@/lib/site-settings-shared";
 export default function SiteEditor(){const [form,setForm]=useState<SiteSettings>(defaultSiteSettings),[busy,setBusy]=useState(false),[message,setMessage]=useState(""),[device,setDevice]=useState<"desktop"|"mobile">("desktop");
 useEffect(()=>{fetch("/api/admin/settings").then(r=>r.json()).then(d=>{if(d.settings)setForm({...defaultSiteSettings,...d.settings});}).catch(()=>setMessage("Instellingen konden niet worden geladen."));},[]);
 function set<K extends keyof SiteSettings>(key:K,value:SiteSettings[K]){setForm(v=>({...v,[key]:value}));}
