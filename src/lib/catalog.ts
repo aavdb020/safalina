@@ -6,7 +6,13 @@ export const demoProducts:Product[]=[
 {id:"44444444-4444-4444-8444-444444444444",slug:"soft-radiance",name:"Soft Radiance",description:"Een zachte everyday essential, geselecteerd met aandacht.",price_cents:2250,compare_at_cents:null,image_url:"https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=900&q=85",category:"Beauty & care",active:true,stock:20}
 ];
 export async function getProducts():Promise<Product[]> {
- try { const {createClient}=await import("@/lib/supabase/server");const db=await createClient();const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});if(!error&&data?.length)return data as Product[]; } catch {/* preview remains available before Supabase setup */ }
- return demoProducts;
+ const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+ const key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+ if(!url||!key)return demoProducts;
+ const {createClient}=await import("@/lib/supabase/server");
+ const db=await createClient();
+ const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});
+ if(error){console.error("Safalina product catalogue could not be loaded:",error.message);return [];}
+ return (data??[]) as Product[];
 }
 export const euro=(cents:number)=>new Intl.NumberFormat("nl-NL",{style:"currency",currency:"EUR"}).format(cents/100);
