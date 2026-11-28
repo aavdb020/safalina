@@ -12,7 +12,7 @@ export async function getProducts():Promise<Product[]> {
  const {createClient}=await import("@/lib/supabase/server");
  const db=await createClient();
  const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});
- if(error){console.error("Safalina product catalogue could not be loaded:",error.message);return [];}
+ if(error){console.error("Safalina product catalogue could not be loaded:",error.message);return demoProducts;}
  return (data??[]) as Product[];
 }
 export const euro=(cents:number)=>new Intl.NumberFormat("nl-NL",{style:"currency",currency:"EUR"}).format(cents/100);
