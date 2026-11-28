@@ -1,3 +1,4 @@
 import Storefront from "@/components/storefront";
 import {getProducts} from "@/lib/catalog";
-export default async function Home(){const products=await getProducts();return <Storefront products={products}/>;}
+import {getSiteSettings} from "@/lib/site-settings";
+export default async function Home(){const [products,settings]=await Promise.all([getProducts(),getSiteSettings()]);return <Storefront products={products} settings={settings}/>;}
