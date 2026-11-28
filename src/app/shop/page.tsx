@@ -1,3 +1,18 @@
 import Link from "next/link";
-import {getProducts,euro} from "@/lib/catalog";
-export default async function ShopPage(){const products=await getProducts();return <><header className="header shop-header"><Link className="brand" href="/">safalina<small>FEEL GOOD, EVERY DAY</small></Link><nav className="nav"><Link href="/">Home</Link><Link href="/shop">Shop</Link><Link href="/account">Account</Link></nav><Link className="button" href="/">Terug naar home</Link></header><main className="section shop-page"><div className="section-head"><span className="kicker">De Safalina selectie</span><h2>Shop alle producten</h2><p>Bekijk de voorbeeldcollectie. Producten en prijzen zijn fictief en uitsluitend bedoeld voor deze presentatie.</p></div><div className="product-grid">{products.map(product=><Link className="product-card" href={"/product/"+product.slug} key={product.id}><div className="product-image"><img src={product.image_url} alt={product.name}/><span className="product-tag">Demo · {product.category}</span>{product.stock<1&&<span className="product-tag">Uitverkocht</span>}</div><div className="product-info"><h3>{product.name}</h3><p>{product.category}</p><span className="product-price">{euro(product.price_cents)}</span></div></Link>)}</div></main><footer className="footer"><div className="footer-bottom"><span>© {new Date().getFullYear()} Safalina · Conceptdemo</span><span><Link href="/privacy">Privacy</Link> · <Link href="/voorwaarden">Voorwaarden</Link></span></div></footer></>; }
+import {getProducts} from "@/lib/catalog";
+import ShopCatalog from "@/components/shop-catalog";
+export default async function ShopPage(){
+ const products=await getProducts();
+ return <>
+  <header className="header shop-header">
+   <Link className="brand" href="/">safalina<small>FEEL GOOD, EVERY DAY</small></Link>
+   <nav className="nav"><Link href="/">Home</Link><Link href="/shop" aria-current="page">Shop</Link><Link href="/account">Account</Link></nav>
+   <Link className="button" href="/">Terug naar home</Link>
+  </header>
+  <main className="section shop-page">
+   <div className="section-head"><span className="kicker">De Safalina selectie</span><h2>Shop alle producten</h2><p>Ontdek de voorbeeldcollectie van Safalina. Alle producten en prijzen zijn fictief en uitsluitend bedoeld om de webshop te presenteren.</p></div>
+   <ShopCatalog products={products}/>
+  </main>
+  <footer className="footer"><div className="footer-bottom"><span>© {new Date().getFullYear()} Safalina · Conceptdemo</span><span><Link href="/privacy">Privacy</Link> · <Link href="/voorwaarden">Voorwaarden</Link></span></div></footer>
+ </>;
+}
