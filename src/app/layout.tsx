@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Safalina — Feel good, every day",
   description: "Ontdek zorgvuldig geselecteerde essentials voor jouw dagelijkse wellness- en beautyroutine.",
-  metadataBase: new URL("https://safalina.nl"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://safalina.vercel.app"),
   openGraph: {
     title: "Safalina — Feel good, every day",
     description: "Een bewustere routine begint hier.",
