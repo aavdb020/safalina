@@ -243,3 +243,18 @@ body{background:#fbf8f3;color:var(--ink);-webkit-font-smoothing:antialiased}
 @keyframes hero-enter{from{opacity:0;transform:translate3d(0,24px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @media(max-width:760px){.storefront-theme .hero{min-height:640px}.storefront-theme .hero-image{background-position:58% center}.storefront-theme .product-card:hover{transform:translateY(-4px)}.storefront-theme .category:hover{transform:translateY(-3px)}.admin-form-actions{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;transform:none!important}}
+
+.product-detail{max-width:1320px;margin:0 auto;padding:54px clamp(20px,6vw,90px) 110px}
+.product-detail .back-link{display:inline-flex;margin-bottom:32px;color:#8b7464;font-size:12px;transition:color .2s,transform .2s}
+.product-detail .back-link:hover{color:#a66f50;transform:translateX(-4px)}
+.product-detail-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.82fr);gap:clamp(36px,7vw,110px);align-items:center}
+.detail-image{overflow:hidden;background:#eee5da;box-shadow:0 30px 80px rgba(48,33,23,.1);transform:perspective(1200px) rotateY(-2deg);transition:transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .7s}
+.detail-image:hover{transform:perspective(1200px) rotateY(0) translateY(-5px);box-shadow:0 40px 90px rgba(48,33,23,.16)}
+.detail-image img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.detail-image:hover img{transform:scale(1.045)}
+.detail-copy h1{font-size:clamp(42px,5.2vw,72px);line-height:1.04;letter-spacing:-.045em;margin:16px 0}
+.detail-copy>p{color:#786b61;line-height:1.9;font-size:14px}
+.detail-copy .detail-price{display:block;font-size:19px;margin:24px 0}
+.detail-copy .stock-note{font-size:11px;color:#8a765f;letter-spacing:.08em;text-transform:uppercase;margin:22px 0}
+.detail-copy .fine-print{font-size:10px;border-top:1px solid #e8ddd1;padding-top:18px;margin-top:24px}
+@media(max-width:760px){.product-detail{padding:32px 18px 70px}.product-detail-grid{grid-template-columns:1fr;gap:35px}.detail-image{transform:none}.detail-copy h1{font-size:44px}}
