@@ -8,6 +8,7 @@ const schema=z.object({
  notes:z.string().max(500).optional().default("")
 });
 export async function POST(request:Request){
+ if(process.env.DEMO_MODE !== "false") return NextResponse.json({error:"Demo-modus: echte bestellingen en betalingen zijn uitgeschakeld."},{status:403});
  try{
   const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Controleer je gegevens en winkelmandje."},{status:400});
   const auth=await createClient();const {data:{user}}=await auth.auth.getUser();if(!user)return NextResponse.json({error:"Log eerst in om af te rekenen."},{status:401});
