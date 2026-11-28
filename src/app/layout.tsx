@@ -15,7 +15,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl">
-      <body>{children}</body>
+      <body>
+        <div className="demo-notice"><span>SAFALINA</span> CONCEPTWEBSITE · DEMO VOOR PRESENTATIEDOELEINDEN · GEEN ECHTE BESTELLINGEN</div>
+        {children}
+      </body>
     </html>
   );
 }
