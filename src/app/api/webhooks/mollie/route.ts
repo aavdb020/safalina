@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {createAdminClient} from "@/lib/supabase/admin";
 export async function POST(request:Request){
+ if(process.env.DEMO_MODE !== "false") return NextResponse.json({ok:true,demo:true});
  const form=await request.formData().catch(()=>null);const paymentId=form?.get("id");
  if(typeof paymentId!=="string"||!paymentId)return NextResponse.json({ok:true});
  const key=process.env.MOLLIE_API_KEY;if(!key)return NextResponse.json({error:"Payment provider not configured"},{status:503});
