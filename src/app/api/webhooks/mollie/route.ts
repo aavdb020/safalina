@@ -10,10 +10,12 @@ export async function POST(request:Request){
  const status=payment.status==="paid"?"paid":["canceled","expired","failed"].includes(payment.status)?payment.status:"pending";
  const db=createAdminClient();const {data:order}=await db.from("orders").select("id,status").eq("id",orderId).eq("mollie_payment_id",paymentId).maybeSingle();
  if(!order||order.status===status||["paid","shipped","refunded"].includes(order.status))return NextResponse.json({ok:true});
- const {data:changed}=await db.from("orders").update({status}).eq("id",orderId).eq("mollie_payment_id",paymentId).eq("status",order.status).select("id").maybeSingle();
- if(changed&&["canceled","expired","failed"].includes(status)){
-  const {data:lines}=await db.from("order_items").select("product_id,quantity").eq("order_id",orderId);
-  for(const line of lines||[]){if(!line.product_id)continue;const {data:product}=await db.from("products").select("stock").eq("id",line.product_id).maybeSingle();if(product)await db.from("products").update({stock:product.stock+line.quantity}).eq("id",line.product_id);}
+ if(["canceled","expired","failed"].includes(status)){
+  const {error}=await db.rpc("release_safalina_order_stock",{p_order_id:orderId,p_failure_status:status});
+  if(error){console.error("Failed to release inventory for Mollie payment",error);return NextResponse.json({error:"Unable to update failed payment"},{status:500});}
+ }else{
+  const {error}=await db.from("orders").update({status}).eq("id",orderId).eq("mollie_payment_id",paymentId).eq("status",order.status);
+  if(error){console.error("Failed to update Mollie payment status",error);return NextResponse.json({error:"Unable to update payment status"},{status:500});}
  }
  return NextResponse.json({ok:true});
 }
