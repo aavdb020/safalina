@@ -258,3 +258,47 @@ body{background:#fbf8f3;color:var(--ink);-webkit-font-smoothing:antialiased}
 .detail-copy .stock-note{font-size:11px;color:#8a765f;letter-spacing:.08em;text-transform:uppercase;margin:22px 0}
 .detail-copy .fine-print{font-size:10px;border-top:1px solid #e8ddd1;padding-top:18px;margin-top:24px}
 @media(max-width:760px){.product-detail{padding:32px 18px 70px}.product-detail-grid{grid-template-columns:1fr;gap:35px}.detail-image{transform:none}.detail-copy h1{font-size:44px}}
+
+/* Editorial multi-page experience */
+.content-page{background:#fbf8f3;color:#30251f}
+.page-hero{position:relative;min-height:390px;padding:90px clamp(24px,9vw,140px);display:flex;flex-direction:column;justify-content:center;overflow:hidden;background:linear-gradient(100deg,rgba(39,27,20,.72),rgba(39,27,20,.15)),url('https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=2000&q=85') center 48%/cover;color:#fff8f0}
+.page-hero h1{font:500 clamp(48px,6vw,76px)/1.04 var(--serif);letter-spacing:-.04em;max-width:760px;margin:17px 0}
+.page-hero p{max-width:550px;color:#f0e5da;line-height:1.9;font-size:14px}
+.page-body{max-width:1240px;margin:auto;padding:75px clamp(22px,7vw,100px) 110px}
+.page-intro{max-width:760px;margin:0 auto 55px;text-align:center}
+.page-intro h2,.editorial-copy h2{font:500 clamp(32px,4vw,48px)/1.12 var(--serif);color:var(--brown);letter-spacing:-.035em;margin:12px 0}
+.page-intro p,.editorial-copy p{font-size:14px;line-height:2;color:#786b61}
+.editorial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin:42px 0}
+.editorial-card{background:#f2ebe2;border:1px solid #e8ddd1;overflow:hidden;transition:transform .4s,box-shadow .4s}
+.editorial-card:hover{transform:translateY(-7px);box-shadow:0 20px 45px rgba(55,37,24,.1)}
+.editorial-card img{width:100%;height:245px;object-fit:cover;display:block}
+.editorial-card div{padding:24px}
+.editorial-card h3{font:500 24px var(--serif);margin:7px 0;color:var(--brown)}
+.editorial-card p{font-size:12px;line-height:1.9;color:#786b61}
+.editorial-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,7vw,90px);align-items:center;margin:75px 0}
+.editorial-split img{width:100%;max-height:570px;object-fit:cover}
+.editorial-copy{max-width:540px}
+.content-cta{margin:70px 0 0;padding:55px 30px;background:#eee5da;text-align:center}
+.content-cta h2{font:500 clamp(30px,4vw,44px) var(--serif);color:var(--brown);margin:0 0 14px}
+.content-cta p{color:#786b61;line-height:1.8}
+.faq-list{max-width:850px;margin:40px auto}
+.faq-item{border-bottom:1px solid #e4d8cb;padding:25px 0}
+.faq-item h3{font:500 22px var(--serif);color:var(--brown);margin:0 0 10px}
+.faq-item p{font-size:13px;line-height:1.9;color:#786b61;margin:0}
+.contact-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:55px;align-items:start}
+.contact-card{background:#f0e8df;padding:32px}
+.contact-card h3{font:500 26px var(--serif);margin:0 0 14px}
+.contact-card p{font-size:13px;line-height:1.9;color:#786b61}
+.contact-form{display:grid;gap:15px}
+.contact-form label{display:grid;gap:7px;font-size:11px;color:#655247}
+.contact-form input,.contact-form textarea{width:100%;border:1px solid #e3d8cd;background:#fffdfa;padding:14px;font:13px var(--sans);color:var(--ink);outline:none}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--clay)}
+.demo-copy{font-size:11px;color:#927f70;line-height:1.8;margin-top:22px}
+.journal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.journal-card{background:#f2ebe2}
+.journal-card img{width:100%;height:270px;object-fit:cover;display:block}
+.journal-card div{padding:22px}
+.journal-card span{font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:#a06b4d}
+.journal-card h2{font:500 25px/1.2 var(--serif);color:var(--brown);margin:10px 0}
+.journal-card p{font-size:12px;line-height:1.9;color:#786b61}
+@media(max-width:760px){.page-hero{min-height:330px;padding:65px 24px}.page-body{padding:55px 20px 75px}.editorial-grid,.journal-grid{grid-template-columns:1fr}.editorial-split,.contact-layout{grid-template-columns:1fr;gap:28px}.editorial-card img{height:230px}.journal-card img{height:230px}}
