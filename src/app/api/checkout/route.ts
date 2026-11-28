@@ -18,8 +18,18 @@ export async function POST(request:Request){
   if(readError||!order)return NextResponse.json({error:"Bestelling aangemaakt, ophalen mislukt."},{status:500});
   const origin=process.env.NEXT_PUBLIC_SITE_URL||new URL(request.url).origin;
   const response=await fetch("https://api.mollie.com/v2/payments",{method:"POST",headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({amount:{currency:"EUR",value:(order.total_cents/100).toFixed(2)},description:"Safalina bestelling "+order.id.slice(0,8),redirectUrl:origin+"/checkout/bedankt?order="+order.id,webhookUrl:origin+"/api/webhooks/mollie",metadata:{order_id:order.id}})});
-  const payment=await response.json();if(!response.ok||!payment?._links?.checkout?.href){await admin.from("orders").update({status:"payment_failed"}).eq("id",order.id);const {data:lines}=await admin.from("order_items").select("product_id,quantity").eq("order_id",order.id);for(const line of lines||[]){if(!line.product_id)continue;const {data:product}=await admin.from("products").select("stock").eq("id",line.product_id).maybeSingle();if(product)await admin.from("products").update({stock:product.stock+line.quantity}).eq("id",line.product_id);}console.error("Mollie error",payment);return NextResponse.json({error:"Betalen is tijdelijk niet beschikbaar."},{status:502});}
-  await admin.from("orders").update({mollie_payment_id:payment.id,status:"pending"}).eq("id",order.id);
+  const payment=await response.json();
+  if(!response.ok||!payment?._links?.checkout?.href){
+   const {error:releaseError}=await admin.rpc("release_safalina_order_stock",{p_order_id:order.id,p_failure_status:"payment_failed"});
+   if(releaseError)console.error("Failed to release reserved stock",releaseError);
+   console.error("Mollie error",payment);
+   return NextResponse.json({error:"Betalen is tijdelijk niet beschikbaar. Er is niets afgeschreven; probeer het later opnieuw."},{status:502});
+  }
+  const {error:updateError}=await admin.from("orders").update({mollie_payment_id:payment.id,status:"pending"}).eq("id",order.id);
+  if(updateError){
+   console.error("Could not save Mollie payment reference",updateError);
+   return NextResponse.json({error:"Betaling is aangemaakt maar de bestelling kon niet worden bijgewerkt. Neem contact op met support."},{status:500});
+  }
   return NextResponse.json({checkoutUrl:payment._links.checkout.href});
  }catch(error){console.error("Checkout error",error);return NextResponse.json({error:"Er ging iets mis tijdens het afrekenen."},{status:500});}
 }
